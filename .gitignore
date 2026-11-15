@@ -7,3 +7,6 @@ exports/
 # Windows / Google Drive clutter
 desktop.ini
 Thumbs.db
+
+#claude
+CLAUDE.md
