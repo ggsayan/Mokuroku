@@ -30,5 +30,4 @@ export const elements = {
   trashDialog: byId("trashDialog"),
   trashContent: byId("trashContent"),
   trashCloseButton: byId("trashClose"),
-  emptyTrashButton: byId("emptyTrash"),
 };

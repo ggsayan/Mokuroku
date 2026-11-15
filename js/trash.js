@@ -98,7 +98,6 @@ async function refreshTrash() {
   }
 
   const isEmpty = !trash.posters.length && !trash.categories.length;
-  elements.emptyTrashButton.disabled = isEmpty;
   if (isEmpty) {
     elements.trashContent.replaceChildren(
       createElement("p", "trash-message", "The trash is empty."),
@@ -282,26 +281,10 @@ async function deleteTrashedCategory(item) {
   await refreshTrash();
 }
 
-/** Deletes everything in the trash for good, after asking. */
-async function emptyTrash() {
-  const confirmed = confirm(
-    "Delete everything in the trash for good?\n\nThis can't be undone.",
-  );
-  if (!confirmed) return;
-  try {
-    await callServer("DELETE", "/api/trash");
-  } catch (error) {
-    return showToast(`Could not empty the trash: ${error.message}`, 5000);
-  }
-  await refreshTrash();
-  showToast("Trash emptied");
-}
-
 /** Connects the Trash button and the panel's controls: ×, Escape and clicking the backdrop close it. */
 export function setUpTrash() {
   elements.trashButton.onclick = openTrash;
   elements.trashCloseButton.onclick = closeTrash;
-  elements.emptyTrashButton.onclick = emptyTrash;
   elements.trashDialog.onclick = (event) => {
     if (event.target === elements.trashDialog) closeTrash();
   };

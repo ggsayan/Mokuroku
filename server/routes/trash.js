@@ -60,15 +60,8 @@ async function deleteTrashedCategory({ response, query }) {
   sendOk(response);
 }
 
-/** DELETE /api/trash — deletes everything in the trash for good. */
-async function emptyTrash({ response }) {
-  await fs.rm(TRASH_FOLDER, { recursive: true, force: true });
-  sendOk(response);
-}
-
 module.exports = {
   listTrash,
   deleteTrashedPoster,
   deleteTrashedCategory,
-  emptyTrash,
 };

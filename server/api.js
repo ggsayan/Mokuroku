@@ -24,7 +24,6 @@ const API_ROUTES = {
   "POST /api/fetch": downloadImage,
   "PUT /api/export": saveExport,
   "GET /api/trash": trash.listTrash,
-  "DELETE /api/trash": trash.emptyTrash,
   "DELETE /api/trash/poster": trash.deleteTrashedPoster,
   "DELETE /api/trash/category": trash.deleteTrashedCategory,
 };
