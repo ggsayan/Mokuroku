@@ -1,83 +1,112 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mokuroku Poster Shelf</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="topbar">
-    <h1>Mokuroku</h1>
-    <nav id="tabs" class="tabs"></nav>
-    <button id="trashButton" class="btn ghost" title="Removed posters and categories">Trash</button>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mokuroku Poster Shelf</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Mokuroku</h1>
+      <nav id="tabs" class="tabs"></nav>
+      <button
+        id="trashButton"
+        class="btn ghost"
+        title="Removed posters and categories"
+      >
+        Trash
+      </button>
+    </header>
 
-  <section class="toolbar">
-    <div class="group">
-      <label class="btn primary">Add posters
-        <input id="fileInput" type="file" accept="image/*" multiple hidden>
-      </label>
-    </div>
-    <div class="group">
-      <label class="field">Columns
-        <input id="cols" type="range" min="4" max="16">
-        <output id="colsOut"></output>
-      </label>
-    </div>
-    <div class="group">
-      <label class="field">Size
-        <select id="exportScale" title="Export resolution">
-          <option value="1">1×</option>
-          <option value="2">2×</option>
-        </select>
-      </label>
-      <button id="exportPng" class="btn primary">Save PNG</button>
-      <button id="exportAll" class="btn ghost" title="Save one PNG per category">Save all</button>
-    </div>
-  </section>
-
-  <main id="stage" class="stage">
-    <div id="grid" class="grid"></div>
-    <p id="empty" class="empty">
-      Drop poster images here, paste one with <kbd>Ctrl</kbd>+<kbd>V</kbd>, or click “Add posters”.
-    </p>
-    <p class="hint">Click a poster to view it larger · drag to reorder or onto a tab to move · right-click for more · + adds a category · double-click a tab to rename it</p>
-  </main>
-
-  <div id="menu" class="menu" hidden></div>
-
-  <div id="viewer" class="viewer" hidden>
-    <button id="viewerPrev" class="viewer-nav prev" title="Previous (←)">‹</button>
-    <figure class="viewer-body">
-      <img id="viewerImg" alt="">
-      <figcaption id="viewerCount"></figcaption>
-    </figure>
-    <button id="viewerNext" class="viewer-nav next" title="Next (→)">›</button>
-    <button id="viewerClose" class="viewer-close" title="Close (Esc)">×</button>
-  </div>
-
-  <div id="trashDialog" class="dialog" hidden>
-    <section class="dialog-card" role="dialog" aria-labelledby="trashTitle">
-      <header class="dialog-header">
-        <h2 id="trashTitle">Trash</h2>
-        <button id="emptyTrash" class="btn ghost danger">Empty trash</button>
-        <button id="trashClose" class="dialog-close" title="Close (Esc)">×</button>
-      </header>
-      <div id="trashContent" class="dialog-body"></div>
+    <section class="toolbar">
+      <div class="group">
+        <label class="btn primary"
+          >Add posters
+          <input id="fileInput" type="file" accept="image/*" multiple hidden />
+        </label>
+      </div>
+      <div class="group">
+        <label class="field"
+          >Columns
+          <input id="cols" type="range" min="4" max="16" />
+          <output id="colsOut"></output>
+        </label>
+      </div>
+      <div class="group">
+        <label class="field"
+          >Size
+          <select id="exportScale" title="Export resolution">
+            <option value="1">1×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
+        <button id="exportPng" class="btn primary">Save PNG</button>
+        <button
+          id="exportAll"
+          class="btn ghost"
+          title="Save one PNG per category"
+        >
+          Save all
+        </button>
+      </div>
     </section>
-  </div>
 
-  <div id="notice" class="notice" hidden>
-    <div class="notice-card">
-      <h2>Mokuroku server isn’t running</h2>
-      <p>Posters are saved to the <code>posters/</code> folder by a small local server.</p>
-      <p>Double-click <code>start.bat</code> in the app folder (or run <code>node server.js</code>),
-         then open <a href="http://127.0.0.1:9153">http://127.0.0.1:9153</a>.</p>
+    <main id="stage" class="stage">
+      <div id="grid" class="grid"></div>
+      <p id="empty" class="empty">
+        Drop poster images here, paste one with <kbd>Ctrl</kbd>+<kbd>V</kbd>, or
+        click “Add posters”.
+      </p>
+    </main>
+
+    <div id="menu" class="menu" hidden></div>
+
+    <div id="viewer" class="viewer" hidden>
+      <button id="viewerPrev" class="viewer-nav prev" title="Previous (←)">
+        ‹
+      </button>
+      <figure class="viewer-body">
+        <img id="viewerImg" alt="" />
+        <figcaption id="viewerCount"></figcaption>
+      </figure>
+      <button id="viewerNext" class="viewer-nav next" title="Next (→)">
+        ›
+      </button>
+      <button id="viewerClose" class="viewer-close" title="Close (Esc)">
+        ×
+      </button>
     </div>
-  </div>
 
-  <div id="toast" class="toast" role="status"></div>
-  <script type="module" src="js/main.js"></script>
-</body>
+    <div id="trashDialog" class="dialog" hidden>
+      <section class="dialog-card" role="dialog" aria-labelledby="trashTitle">
+        <header class="dialog-header">
+          <h2 id="trashTitle">Trash</h2>
+          <button id="emptyTrash" class="btn ghost danger">Empty trash</button>
+          <button id="trashClose" class="dialog-close" title="Close (Esc)">
+            ×
+          </button>
+        </header>
+        <div id="trashContent" class="dialog-body"></div>
+      </section>
+    </div>
+
+    <div id="notice" class="notice" hidden>
+      <div class="notice-card">
+        <h2>Mokuroku server isn’t running</h2>
+        <p>
+          Posters are saved to the <code>posters/</code> folder by a small local
+          server.
+        </p>
+        <p>
+          Double-click <code>start.bat</code> in the app folder (or run
+          <code>node server.js</code>), then open
+          <a href="http://127.0.0.1:9153">http://127.0.0.1:9153</a>.
+        </p>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+    <script type="module" src="js/main.js"></script>
+  </body>
 </html>
