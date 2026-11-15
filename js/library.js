@@ -23,6 +23,7 @@ import { createId } from "./utils.js";
 /**
  * @typedef {object} Library
  * @property {string} activeCategoryId - the tab that is open
+ * @property {1 | 2} [exportScale] - the export size picked in the toolbar (1× if missing)
  * @property {Category[]} categories - in tab order
  */
 

@@ -5,7 +5,7 @@ import { setUpContextMenu } from "./contextMenu.js";
 import { elements } from "./elements.js";
 import { setUpImageImport } from "./imageImport.js";
 import { getActiveCategory, loadLibrary, saveLibrary } from "./library.js";
-import { setUpPngExport } from "./pngExport.js";
+import { setUpPngExport, showExportScale } from "./pngExport.js";
 import { setUpPosterDragging } from "./posterDrag.js";
 import { render, showColumnCount } from "./render.js";
 import { setUpTrash } from "./trash.js";
@@ -34,6 +34,7 @@ setUpTrash();
 
 try {
   await loadLibrary();
+  showExportScale();
   render();
 } catch (error) {
   console.error(error);

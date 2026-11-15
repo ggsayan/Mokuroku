@@ -85,6 +85,11 @@ code { font: 13px ui-monospace, monospace; color: var(--text); }
 
 .field { display: flex; align-items: center; gap: 6px; color: var(--muted); }
 .field output { min-width: 2ch; color: var(--text); }
+.field select {
+  padding: 5px 6px;
+  background: var(--line); color: var(--text);
+  border: 1px solid transparent; border-radius: 6px; font: inherit;
+}
 
 /* ---------- Poster grid ---------- */
 .stage { flex: 1; padding: 20px; }
