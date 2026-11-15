@@ -1,3 +1,4 @@
+/* ---------- Theme ---------- */
 :root {
   --bg: #000000;
   --panel: #0b0b0b;
@@ -21,7 +22,13 @@ body {
   font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* ---------- Header & tabs ---------- */
+kbd {
+  padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px;
+  font: 12px ui-monospace, monospace;
+}
+code { font: 13px ui-monospace, monospace; color: var(--text); }
+
+/* ---------- Top bar & category tabs ---------- */
 .topbar {
   display: flex;
   align-items: center;
@@ -40,12 +47,22 @@ body {
   color: var(--muted); font: inherit; white-space: nowrap; cursor: pointer;
 }
 .tab:hover, .tab.active { color: var(--text); background: var(--line); }
+.tab.drop-target { color: #fff; background: var(--accent); }
 .count {
   padding: 1px 6px; border-radius: 999px;
   background: var(--bg); color: var(--muted); font-size: 11px;
 }
 
-/* ---------- Toolbar ---------- */
+.add-tab { font-size: 18px; line-height: 1; padding: 6px 12px; }
+.tab-input {
+  width: 160px; flex: none;
+  padding: 7px 10px;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--accent); border-radius: 8px;
+  font: inherit; outline: none;
+}
+
+/* ---------- Toolbar & buttons ---------- */
 .toolbar {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: 12px 24px;
@@ -64,6 +81,7 @@ body {
 .btn.primary { background: var(--accent); color: #fff; }
 .btn.ghost { background: none; border-color: var(--line); }
 .btn.danger { color: var(--danger); }
+.btn.small { padding: 4px 8px; font-size: 12px; }
 
 .field { display: flex; align-items: center; gap: 6px; color: var(--muted); }
 .field output { min-width: 2ch; color: var(--text); }
@@ -88,7 +106,7 @@ body {
   border-radius: var(--radius);
   background: var(--panel);
   box-shadow: 0 2px 8px rgb(0 0 0 / .35);
-  cursor: grab;
+  cursor: zoom-in;
 }
 .frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
@@ -107,64 +125,23 @@ body {
   padding: 2px 7px; border-radius: 999px;
   background: rgb(0 0 0 / .75); color: #ffc857;
   border: 1px solid rgb(255 200 87 / .5);
-  font-size: 11px; font-weight: 600; pointer-events: auto;
+  font-size: 11px; font-weight: 600;
+}
+
+/* Poster that an image dragged in from outside would replace */
+.poster.replace-target .frame {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.poster.replace-target .frame::after {
+  content: "Replace";
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgb(0 0 0 / .55); color: #fff;
+  font-weight: 600; letter-spacing: .5px;
 }
 
 .empty { margin-top: 15vh; text-align: center; color: var(--muted); }
-kbd {
-  padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px;
-  font: 12px ui-monospace, monospace;
-}
-
-/* ---------- "Server not running" notice ---------- */
-.notice {
-  position: fixed; inset: 0;
-  display: grid; place-items: center;
-  background: rgb(0 0 0 / .92);
-}
-.notice[hidden] { display: none; }
-.notice-card {
-  width: min(460px, 90vw);
-  padding: 28px;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
-}
-.notice-card h2 { margin: 0 0 8px; font-size: 20px; }
-.notice-card p { margin: 0 0 12px; color: var(--muted); }
-.notice-card a { color: var(--accent); }
-code { font: 13px ui-monospace, monospace; color: var(--text); }
-
-/* ---------- Toast ---------- */
-.toast {
-  position: fixed; bottom: 20px; left: 50%;
-  max-width: 90vw;
-  padding: 10px 16px;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-  opacity: 0; transform: translate(-50%, 20px);
-  transition: .2s; pointer-events: none;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-.frame { cursor: zoom-in; }
-.hint { margin: 24px 0 0; text-align: center; color: var(--muted); font-size: 12px; opacity: .7; }
-
-select {
-  padding: 5px 6px;
-  background: var(--line); color: var(--text);
-  border: 1px solid transparent; border-radius: 6px; font: inherit;
-}
-
-/* "+" button and the name box that replaces it */
-.add-tab { font-size: 18px; line-height: 1; padding: 6px 12px; }
-.tab-input {
-  width: 160px; flex: none;
-  padding: 7px 10px;
-  background: var(--bg); color: var(--text);
-  border: 1px solid var(--accent); border-radius: 8px;
-  font: inherit; outline: none;
-}
-
-/* Tab highlighted while a poster is dragged over it */
-.tab.drop-target { color: #fff; background: var(--accent); }
 
 /* ---------- Right-click menu ---------- */
 .menu {
@@ -186,7 +163,7 @@ select {
 .menu-item:hover { background: var(--line); }
 .menu-item.danger { color: var(--danger); }
 
-/* ---------- Poster viewer (popup) ---------- */
+/* ---------- Poster popup ---------- */
 .viewer {
   position: fixed; inset: 0; z-index: 20;
   display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -212,23 +189,9 @@ select {
   font-size: 28px; line-height: 1; cursor: pointer;
 }
 .viewer-nav:hover, .viewer-close:hover { background: rgb(255 255 255 / .2); }
-.viewer-nav[hidden] { visibility: hidden; }
 .viewer-close { position: absolute; top: 16px; right: 16px; font-size: 24px; }
 
-/* ---------- Toast action (Undo) ---------- */
-.toast { display: flex; align-items: center; gap: 12px; }
-.toast.show { pointer-events: auto; }
-.toast-action {
-  padding: 3px 10px;
-  background: none; border: 1px solid var(--accent); border-radius: 6px;
-  color: var(--accent); font: inherit; font-weight: 600; cursor: pointer;
-}
-.toast-action:hover { background: var(--accent); color: #fff; }
-
-/* ---------- Trash panel ---------- */
-.btn.small { padding: 4px 8px; font-size: 12px; }
-.btn:disabled { opacity: .4; cursor: default; filter: none; }
-
+/* ---------- Dialogs ---------- */
 .dialog {
   position: fixed; inset: 0; z-index: 15;
   display: grid; place-items: center;
@@ -257,6 +220,7 @@ select {
 .dialog-close:hover { background: var(--line); color: var(--text); }
 .dialog-body { padding: 4px 18px 18px; overflow-y: auto; }
 
+/* ---------- Trash panel ---------- */
 .trash-message { margin: 32px 0; text-align: center; color: var(--muted); }
 .trash-heading { margin: 18px 0 8px; font-size: 14px; }
 .trash-meta { margin: 0; color: var(--muted); font-size: 12px; }
@@ -286,3 +250,37 @@ p.trash-meta { margin: 12px 0 8px; }
   border-radius: 8px; background: var(--bg);
 }
 .trash-poster .trash-actions .btn { flex: 1; }
+
+/* ---------- "Server not running" notice ---------- */
+.notice {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: rgb(0 0 0 / .92);
+}
+.notice[hidden] { display: none; }
+.notice-card {
+  width: min(460px, 90vw);
+  padding: 28px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+}
+.notice-card h2 { margin: 0 0 8px; font-size: 20px; }
+.notice-card p { margin: 0 0 12px; color: var(--muted); }
+.notice-card a { color: var(--accent); }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; bottom: 20px; left: 50%;
+  display: flex; align-items: center; gap: 12px;
+  max-width: 90vw;
+  padding: 10px 16px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  opacity: 0; transform: translate(-50%, 20px);
+  transition: .2s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toast-action {
+  padding: 3px 10px;
+  background: none; border: 1px solid var(--accent); border-radius: 6px;
+  color: var(--accent); font: inherit; font-weight: 600; cursor: pointer;
+}
+.toast-action:hover { background: var(--accent); color: #fff; }

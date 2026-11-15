@@ -31,8 +31,9 @@ async function downloadImage({ response, query }) {
   } catch {
     throw httpError(502, "Could not reach that site");
   }
-  if (!download.ok)
+  if (!download.ok) {
     throw httpError(502, `The site answered ${download.status}`);
+  }
 
   const contentType = (download.headers.get("content-type") || "")
     .split(";")[0]

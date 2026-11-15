@@ -1,3 +1,5 @@
+// The page elements the scripts work with, looked up once
+
 /**
  * Finds an element in index.html by its id.
  * @param {string} id
@@ -14,7 +16,6 @@ export const elements = {
   fileInput: byId("fileInput"),
   columnsSlider: byId("cols"),
   columnsValue: byId("colsOut"),
-  exportScaleSelect: byId("exportScale"),
   exportButton: byId("exportPng"),
   exportAllButton: byId("exportAll"),
   contextMenu: byId("menu"),

@@ -4,7 +4,11 @@ const path = require("path");
 const { CATEGORY_TRASH_FOLDER } = require("../config");
 const { moveTo, pathExists, timestamp } = require("../files");
 const { httpError, sendOk } = require("../httpHelpers");
-const { categoryFolderPath, isSafeName, requireFolderName } = require("../paths");
+const {
+  categoryFolderPath,
+  isSafeName,
+  requireFolderName,
+} = require("../paths");
 
 /** POST /api/folder?folder= — creates a category folder (fine if it already exists). */
 async function createCategoryFolder({ response, query }) {
@@ -50,7 +54,8 @@ async function restoreCategoryFolder({ response, query }) {
 async function renameCategoryFolder({ response, query }) {
   const from = categoryFolderPath(query.folder);
   const to = categoryFolderPath(query.to);
-  const isCaseChangeOnly = query.folder.toLowerCase() === query.to.toLowerCase();
+  const isCaseChangeOnly =
+    query.folder.toLowerCase() === query.to.toLowerCase();
   if (!isCaseChangeOnly && (await pathExists(to))) {
     throw httpError(409, "A folder with that name already exists");
   }

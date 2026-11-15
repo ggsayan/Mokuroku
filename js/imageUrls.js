@@ -47,7 +47,9 @@ function fullSizeVersions(address) {
 
   if (host === "image.tmdb.org") {
     // /t/p/w300/abc.jpg → /t/p/original/abc.jpg
-    versions.push(withPath(url.pathname.replace(/^\/t\/p\/[^/]+\//, "/t/p/original/")));
+    versions.push(
+      withPath(url.pathname.replace(/^\/t\/p\/[^/]+\//, "/t/p/original/")),
+    );
   }
   if (host === "cdn.myanimelist.net") {
     // /r/50x70/images/anime/1/123t.jpg → /images/anime/1/123l.jpg ("l" is the large copy).
@@ -58,11 +60,17 @@ function fullSizeVersions(address) {
   }
   if (host.endsWith("anilist.co")) {
     // .../cover/small/bx21.jpg or /medium/ → /large/ (AniList's biggest cover)
-    versions.push(withPath(url.pathname.replace(/\/cover\/(small|medium)\//, "/cover/large/")));
+    versions.push(
+      withPath(
+        url.pathname.replace(/\/cover\/(small|medium)\//, "/cover/large/"),
+      ),
+    );
   }
   if (host === "m.media-amazon.com" || host.endsWith(".media-amazon.com")) {
     // IMDb: abc._V1_UX182_CR0,3,182,268_AL_.jpg → abc._V1_.jpg (full size)
-    versions.push(withPath(url.pathname.replace(/\._V1_.*(\.\w+)$/, "._V1_$1")));
+    versions.push(
+      withPath(url.pathname.replace(/\._V1_.*(\.\w+)$/, "._V1_$1")),
+    );
   }
   return versions.filter((version) => version !== address);
 }
@@ -93,8 +101,9 @@ function toFullAddress(address, baseAddress) {
 function addressesFromImage(image, pageAddress) {
   const src = image.getAttribute("src");
   const base = /^https?:/.test(src ?? "") ? src : pageAddress;
-  const sourceSets = [...image.closest("picture")?.querySelectorAll("source") ?? []]
-    .map((source) => largestFromSrcset(source.getAttribute("srcset")));
+  const sourceSets = [
+    ...(image.closest("picture")?.querySelectorAll("source") ?? []),
+  ].map((source) => largestFromSrcset(source.getAttribute("srcset")));
   const found = [
     largestFromSrcset(image.getAttribute("srcset")),
     largestFromSrcset(image.getAttribute("data-srcset")),
@@ -132,7 +141,8 @@ export function getDroppedImageAddresses(dataTransfer) {
     if (image) addresses = addressesFromImage(image, linkAddress);
   }
   if (!addresses.length && linkAddress) addresses = [linkAddress];
-  if (!addresses.length && /^(https?|data):/.test(plainText)) addresses = [plainText];
+  if (!addresses.length && /^(https?|data):/.test(plainText))
+    addresses = [plainText];
 
   const withFullSizes = addresses.flatMap((address) => [
     ...fullSizeVersions(address),

@@ -1,10 +1,12 @@
+// Settings for the browser app: defaults, image sizes and the look of PNG exports
+
 export const DEFAULT_CATEGORY_NAMES = [
   "Anime Series",
   "Anime Movies",
   "TV Series",
 ];
 export const DEFAULT_COLUMNS = 6;
-export const MAX_STORED_POSTER_WIDTH = 800; // big enough to stay sharp in a 2× export
+export const MAX_STORED_POSTER_WIDTH = 800; // big enough to stay sharp in the popup
 export const LOW_RESOLUTION_WIDTH = 400; // posters narrower than this get a "Low res" badge
 
 export const EXPORT_LAYOUT = {

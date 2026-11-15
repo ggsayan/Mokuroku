@@ -4,7 +4,7 @@
 import { setUpContextMenu } from "./contextMenu.js";
 import { elements } from "./elements.js";
 import { setUpImageImport } from "./imageImport.js";
-import { getActiveCategory, library, loadLibrary, saveLibrary } from "./library.js";
+import { getActiveCategory, loadLibrary, saveLibrary } from "./library.js";
 import { setUpPngExport } from "./pngExport.js";
 import { setUpPosterDragging } from "./posterDrag.js";
 import { render, showColumnCount } from "./render.js";
@@ -34,7 +34,6 @@ setUpTrash();
 
 try {
   await loadLibrary();
-  elements.exportScaleSelect.value = library.exportScale === 2 ? "2" : "1";
   render();
 } catch (error) {
   console.error(error);

@@ -76,7 +76,9 @@ const restoreTargetFor = (item) =>
 /** Opens the Trash panel and loads what is in the trash. */
 async function openTrash() {
   elements.trashDialog.hidden = false;
-  elements.trashContent.replaceChildren(createElement("p", "trash-message", "Loading…"));
+  elements.trashContent.replaceChildren(
+    createElement("p", "trash-message", "Loading…"),
+  );
   await refreshTrash();
 }
 
@@ -92,7 +94,11 @@ async function refreshTrash() {
     trash = await requestJson("GET", "/api/trash");
   } catch (error) {
     elements.trashContent.replaceChildren(
-      createElement("p", "trash-message", `Could not load the trash: ${error.message}`),
+      createElement(
+        "p",
+        "trash-message",
+        `Could not load the trash: ${error.message}`,
+      ),
     );
     return;
   }
@@ -138,13 +144,21 @@ function renderTrashedCategories(categories) {
       : "";
     details.append(
       createElement("strong", "", item.folder),
-      createElement("span", "trash-meta", plural(item.files.length, "poster") + removedOn),
+      createElement(
+        "span",
+        "trash-meta",
+        plural(item.files.length, "poster") + removedOn,
+      ),
     );
 
     const actions = createElement("div", "trash-actions");
     actions.append(
       createButton("Restore", () => restoreTrashedCategory(item)),
-      createButton("Delete forever", () => deleteTrashedCategory(item), "danger"),
+      createButton(
+        "Delete forever",
+        () => deleteTrashedCategory(item),
+        "danger",
+      ),
     );
 
     row.append(preview, details, actions);
@@ -186,7 +200,12 @@ function renderTrashedPosters(posters) {
       const actions = createElement("div", "trash-actions");
       actions.append(
         createButton("Restore", () => restoreTrashedPoster(item)),
-        createButton("Delete", () => deleteTrashedPoster(item), "danger", "Delete forever"),
+        createButton(
+          "Delete",
+          () => deleteTrashedPoster(item),
+          "danger",
+          "Delete forever",
+        ),
       );
       card.append(image, actions);
       grid.append(card);
@@ -233,7 +252,10 @@ async function restoreTrashedCategory(item) {
       folder,
     });
   } catch (error) {
-    return showToast(`Could not restore “${item.folder}”: ${error.message}`, 5000);
+    return showToast(
+      `Could not restore “${item.folder}”: ${error.message}`,
+      5000,
+    );
   }
 
   // Reloading picks up the restored folder as a category, with all its posters
@@ -274,9 +296,14 @@ async function deleteTrashedCategory(item) {
   );
   if (!confirmed) return;
   try {
-    await callServer("DELETE", "/api/trash/category", { trashed: item.trashed });
+    await callServer("DELETE", "/api/trash/category", {
+      trashed: item.trashed,
+    });
   } catch (error) {
-    return showToast(`Could not delete “${item.folder}”: ${error.message}`, 5000);
+    return showToast(
+      `Could not delete “${item.folder}”: ${error.message}`,
+      5000,
+    );
   }
   await refreshTrash();
 }

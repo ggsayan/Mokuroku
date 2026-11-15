@@ -35,6 +35,20 @@ export function openViewer(position) {
   elements.viewer.hidden = false;
 }
 
+/**
+ * The file name of the poster shown in the popup.
+ * @returns {string | null} null when the popup is closed
+ */
+export function getShownPosterFile() {
+  if (elements.viewer.hidden || shownPosition < 0) return null;
+  return getActiveCategory().posters[shownPosition]?.file ?? null;
+}
+
+/** Shows the popup's poster again, e.g. after its image was replaced. Does nothing when closed. */
+export function refreshViewer() {
+  if (!elements.viewer.hidden) openViewer(shownPosition);
+}
+
 /** Closes the popup. */
 function closeViewer() {
   elements.viewer.hidden = true;

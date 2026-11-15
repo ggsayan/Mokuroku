@@ -25,15 +25,10 @@ const CONTENT_TYPES = {
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".json": "application/json",
-  ".ico": "image/x-icon",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
   ".webp": "image/webp",
-  ".gif": "image/gif",
-  ".avif": "image/avif",
-  ".bmp": "image/bmp",
-  ".svg": "image/svg+xml",
 };
 
 module.exports = {

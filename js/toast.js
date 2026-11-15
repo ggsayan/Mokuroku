@@ -1,3 +1,4 @@
+// Short messages at the bottom of the page
 import { elements } from "./elements.js";
 
 let hideTimer;

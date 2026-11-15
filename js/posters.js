@@ -1,10 +1,11 @@
-// Adding, removing and moving posters
+// Adding, replacing, removing and moving posters
 import { callServer, requestJson } from "./api.js";
 import { MAX_STORED_POSTER_WIDTH } from "./config.js";
 import { getActiveCategory, library, saveLibrary } from "./library.js";
 import { render } from "./render.js";
 import { showToast } from "./toast.js";
 import { createId, plural } from "./utils.js";
+import { refreshViewer } from "./viewer.js";
 
 /**
  * Shrinks an image to at most MAX_STORED_POSTER_WIDTH wide and converts it to JPEG.
@@ -61,6 +62,85 @@ export async function addPosters(imageBlobs) {
     `Added ${addedCount}, ${failedCount} failed: ${lastErrorMessage}`,
     6000,
   );
+}
+
+/**
+ * Replaces a poster's image, keeping its place in the grid. The new image gets
+ * its own file name and the old one goes to the trash, so an Undo button is shown
+ * and the old image can also be restored later from the Trash panel.
+ * @param {string} file - the poster's current file name
+ * @param {Blob} imageBlob - the new image
+ */
+export async function replacePosterImage(file, imageBlob) {
+  const category = getActiveCategory();
+  const folder = category.folder;
+  const poster = category.posters.find((p) => p.file === file);
+  if (!poster) return;
+
+  const newFile = `${createId()}.jpg`;
+  try {
+    await callServer(
+      "PUT",
+      "/api/poster",
+      { folder, file: newFile },
+      await shrinkImage(imageBlob),
+    );
+  } catch (error) {
+    console.error(error);
+    return showToast(`Could not replace the poster: ${error.message}`, 6000);
+  }
+  try {
+    await callServer("DELETE", "/api/poster", { folder, file });
+  } catch (error) {
+    // Without this, the new image would show up as an extra poster on the next load
+    await callServer("DELETE", "/api/poster", { folder, file: newFile }).catch(
+      () => {},
+    );
+    return showToast(`Could not replace the poster: ${error.message}`, 6000);
+  }
+
+  poster.file = newFile;
+  await saveLibrary();
+  render();
+  refreshViewer();
+  showToast("Replaced poster", 8000, {
+    label: "Undo",
+    onClick: () => undoReplacePoster(category.id, folder, file, newFile),
+  });
+}
+
+/**
+ * Undoes replacePosterImage: brings the old image back from the trash and moves
+ * the new one to the trash.
+ * @param {string} categoryId
+ * @param {string} folder - the category's folder when the image was replaced
+ * @param {string} oldFile
+ * @param {string} newFile
+ */
+async function undoReplacePoster(categoryId, folder, oldFile, newFile) {
+  const category = library.categories.find((c) => c.id === categoryId);
+  const poster = category?.posters.find((p) => p.file === newFile);
+  if (!poster) return showToast("That poster no longer exists", 5000);
+
+  try {
+    await callServer("POST", "/api/poster/restore", {
+      folder,
+      file: oldFile,
+      to: category.folder,
+    });
+    await callServer("DELETE", "/api/poster", {
+      folder: category.folder,
+      file: newFile,
+    });
+  } catch (error) {
+    console.error(error);
+    return showToast(`Could not undo: ${error.message}`, 5000);
+  }
+  poster.file = oldFile;
+  await saveLibrary();
+  render();
+  refreshViewer();
+  showToast("Restored the previous image");
 }
 
 /**

@@ -41,7 +41,9 @@ const timestamp = () => Date.now().toString(36);
 async function listSubfolders(parentFolder) {
   try {
     const entries = await fs.readdir(parentFolder, { withFileTypes: true });
-    return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+    return entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name);
   } catch (error) {
     if (error.code === "ENOENT") return [];
     throw error;
@@ -86,7 +88,9 @@ async function listPosterFilesOnDisk() {
   const filesByFolder = {};
   for (const folder of await listSubfolders(POSTERS_FOLDER)) {
     if (folder.startsWith(".")) continue;
-    filesByFolder[folder] = await listImageFiles(path.join(POSTERS_FOLDER, folder));
+    filesByFolder[folder] = await listImageFiles(
+      path.join(POSTERS_FOLDER, folder),
+    );
   }
   return filesByFolder;
 }

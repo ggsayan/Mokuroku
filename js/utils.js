@@ -1,3 +1,5 @@
+// Small helpers used across the app
+
 /**
  * Creates a short unique ID from the current time plus random characters.
  * @returns {string} e.g. "mwhgbgq9j0ikrm"

@@ -15,8 +15,9 @@ async function serveAppFile(response, url) {
     url.pathname === "/" ? "/index.html" : url.pathname,
   );
   const file = path.normalize(path.join(APP_FOLDER, relativePath));
-  if (!file.startsWith(APP_FOLDER + path.sep))
+  if (!file.startsWith(APP_FOLDER + path.sep)) {
     throw httpError(403, "Forbidden");
+  }
 
   let contents;
   try {

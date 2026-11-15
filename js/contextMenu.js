@@ -1,11 +1,13 @@
 // The right-click menus for posters and category tabs
 import { removeCategory, showRenameInput } from "./categories.js";
 import { elements } from "./elements.js";
+import { chooseReplacementImage } from "./imageImport.js";
 import { getActiveCategory, getCategoriesInTabOrder } from "./library.js";
 import { movePoster, removePoster } from "./posters.js";
 
 /**
- * Shows a poster's right-click menu: move it to another category, or remove it.
+ * Shows a poster's right-click menu: move it to another category, replace its
+ * image, or remove it.
  * @param {number} x - where to show the menu, in window pixels
  * @param {number} y
  * @param {string} file - the poster's file name
@@ -24,6 +26,7 @@ export function showPosterMenu(x, y, file) {
       createMenuItem(category.name, () => movePoster(file, category)),
     ),
     document.createElement("hr"),
+    createMenuItem("Replace image…", () => chooseReplacementImage(file)),
     createMenuItem("Remove poster", () => removePoster(file), "danger"),
   ]);
 }

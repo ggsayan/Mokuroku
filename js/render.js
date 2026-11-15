@@ -83,19 +83,6 @@ function renderGrid() {
 }
 
 /**
- * Creates the "Low res" badge for a poster whose image is small.
- * @param {HTMLImageElement} image - the loaded poster image
- * @returns {HTMLElement}
- */
-function createLowResBadge(image) {
-  const badge = document.createElement("span");
-  badge.className = "low-res-badge";
-  badge.textContent = "Low res";
-  badge.title = `Low resolution: ${image.naturalWidth} × ${image.naturalHeight} px`;
-  return badge;
-}
-
-/**
  * Sets the grid's number of columns and updates the slider to match.
  * @param {number} columns
  */
@@ -128,7 +115,8 @@ function createPosterCard(category, poster) {
   image.loading = "lazy";
   image.draggable = false;
   image.onload = () => {
-    if (image.naturalWidth < LOW_RESOLUTION_WIDTH) frame.append(createLowResBadge(image));
+    if (image.naturalWidth < LOW_RESOLUTION_WIDTH)
+      frame.append(createLowResBadge(image));
   };
 
   const removeButton = document.createElement("button");
@@ -151,4 +139,17 @@ function createPosterCard(category, poster) {
   frame.append(image, removeButton);
   card.append(frame);
   return card;
+}
+
+/**
+ * Creates the "Low res" badge for a poster whose image is small.
+ * @param {HTMLImageElement} image - the loaded poster image
+ * @returns {HTMLElement}
+ */
+function createLowResBadge(image) {
+  const badge = document.createElement("span");
+  badge.className = "low-res-badge";
+  badge.textContent = "Low res";
+  badge.title = `Low resolution: ${image.naturalWidth} × ${image.naturalHeight} px`;
+  return badge;
 }

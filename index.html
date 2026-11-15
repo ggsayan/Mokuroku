@@ -34,13 +34,6 @@
         </label>
       </div>
       <div class="group">
-        <label class="field"
-          >Size
-          <select id="exportScale" title="Export resolution">
-            <option value="1">1×</option>
-            <option value="2">2×</option>
-          </select>
-        </label>
         <button id="exportPng" class="btn primary">Save PNG</button>
         <button
           id="exportAll"
@@ -63,16 +56,12 @@
     <div id="menu" class="menu" hidden></div>
 
     <div id="viewer" class="viewer" hidden>
-      <button id="viewerPrev" class="viewer-nav prev" title="Previous (←)">
-        ‹
-      </button>
+      <button id="viewerPrev" class="viewer-nav" title="Previous (←)">‹</button>
       <figure class="viewer-body">
         <img id="viewerImg" alt="" />
         <figcaption id="viewerCount"></figcaption>
       </figure>
-      <button id="viewerNext" class="viewer-nav next" title="Next (→)">
-        ›
-      </button>
+      <button id="viewerNext" class="viewer-nav" title="Next (→)">›</button>
       <button id="viewerClose" class="viewer-close" title="Close (Esc)">
         ×
       </button>

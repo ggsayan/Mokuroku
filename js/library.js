@@ -23,7 +23,6 @@ import { createId } from "./utils.js";
 /**
  * @typedef {object} Library
  * @property {string} activeCategoryId - the tab that is open
- * @property {number} [exportScale] - 1 or 2
  * @property {Category[]} categories - in tab order
  */
 
@@ -88,7 +87,13 @@ export function makeUniqueFolderName(categoryName, exceptCategory) {
  * @returns {Category}
  */
 export function createCategory(name, folder = makeUniqueFolderName(name)) {
-  return { id: createId(), name, folder, columns: DEFAULT_COLUMNS, posters: [] };
+  return {
+    id: createId(),
+    name,
+    folder,
+    columns: DEFAULT_COLUMNS,
+    posters: [],
+  };
 }
 
 // Saves run one after another, so an older save can never overwrite a newer one
@@ -121,10 +126,6 @@ export async function loadLibrary() {
     "/api/library",
   );
   library = savedLibrary?.categories ? savedLibrary : { categories: [] };
-
-  // Older library files called this "activeId"
-  library.activeCategoryId ??= library.activeId;
-  delete library.activeId;
 
   const isFirstRun =
     !savedLibrary?.categories && !Object.keys(filesByFolder).length;

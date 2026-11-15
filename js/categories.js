@@ -83,7 +83,8 @@ export function showRenameInput(category) {
   const tab = elements.tabs.querySelector(
     `[data-category-id="${category.id}"]`,
   );
-  if (tab) showNameInput(tab, category.name, (name) => renameCategory(category, name));
+  if (tab)
+    showNameInput(tab, category.name, (name) => renameCategory(category, name));
 }
 
 /**

@@ -8,16 +8,9 @@ import {
   EXPORT_LAYOUT,
 } from "./config.js";
 import { elements } from "./elements.js";
-import { getActiveCategory, library, saveLibrary } from "./library.js";
+import { getActiveCategory, library } from "./library.js";
 import { showToast } from "./toast.js";
 import { plural, toSafeFileName } from "./utils.js";
-
-/**
- * The export size picked in the toolbar.
- * @returns {1 | 2}
- */
-const getChosenExportScale = () =>
-  elements.exportScaleSelect.value === "2" ? 2 : 1;
 
 /**
  * Draws an image so it fills the box completely, cropping whatever overflows
@@ -51,15 +44,21 @@ function drawImageCover(context, image, x, y, width, height) {
 /**
  * Draws a category as one image: its name, the number of titles, and its posters
  * in a grid with the category's column count. Posters that can't be loaded are skipped.
+ * The image is drawn smaller if it would be larger than the browser can draw.
  * @param {Category} category
- * @param {number} requestedScale - 1 or 2; lowered if the image would be larger
- *   than the browser can draw
- * @returns {Promise<{ pngBlob: Blob, scale: number }>} the PNG and the scale actually used
+ * @returns {Promise<{ pngBlob: Blob, scale: number }>} the PNG and the scale used
+ *   (1 unless it had to be drawn smaller)
  */
-async function renderCategoryPng(category, requestedScale) {
+async function renderCategoryPng(category) {
   const { posters } = category;
-  const { posterWidth, posterHeight, gap, padding, headerHeight, cornerRadius } =
-    EXPORT_LAYOUT;
+  const {
+    posterWidth,
+    posterHeight,
+    gap,
+    padding,
+    headerHeight,
+    cornerRadius,
+  } = EXPORT_LAYOUT;
 
   const columns = Math.min(category.columns, posters.length);
   const rows = Math.ceil(posters.length / columns);
@@ -67,7 +66,7 @@ async function renderCategoryPng(category, requestedScale) {
   const height =
     padding * 2 + headerHeight + rows * posterHeight + (rows - 1) * gap;
   const scale = Math.min(
-    requestedScale,
+    1,
     CANVAS_MAX_SIDE / width,
     CANVAS_MAX_SIDE / height,
     Math.sqrt(CANVAS_MAX_AREA / (width * height)),
@@ -77,7 +76,7 @@ async function renderCategoryPng(category, requestedScale) {
   canvas.width = Math.floor(width * scale);
   canvas.height = Math.floor(height * scale);
   const context = canvas.getContext("2d");
-  context.scale(scale, scale); // everything below is drawn in 1× units
+  context.scale(scale, scale); // everything below is drawn in full-size units
   context.imageSmoothingQuality = "high";
 
   context.fillStyle = EXPORT_COLORS.background;
@@ -94,7 +93,9 @@ async function renderCategoryPng(category, requestedScale) {
   for (const [index, poster] of posters.entries()) {
     const x = padding + (index % columns) * (posterWidth + gap);
     const y =
-      padding + headerHeight + Math.floor(index / columns) * (posterHeight + gap);
+      padding +
+      headerHeight +
+      Math.floor(index / columns) * (posterHeight + gap);
 
     let bitmap;
     try {
@@ -122,20 +123,17 @@ async function renderCategoryPng(category, requestedScale) {
 }
 
 /**
- * Renders a category and saves it into exports/, named after the category
- * (with "@2x" at 2× size).
+ * Renders a category and saves it into exports/, named after the category.
  * @param {Category} category
  * @returns {Promise<string>} the file name, with a note if it had to be saved smaller
  */
 async function saveCategoryPng(category) {
-  const requestedScale = getChosenExportScale();
-  const { pngBlob, scale } = await renderCategoryPng(category, requestedScale);
-  const scaleSuffix = requestedScale > 1 ? `@${requestedScale}x` : "";
-  const file = `${toSafeFileName(category.name)}${scaleSuffix}.png`;
+  const { pngBlob, scale } = await renderCategoryPng(category);
+  const file = `${toSafeFileName(category.name)}.png`;
   await callServer("PUT", "/api/export", { file }, pngBlob);
 
-  return scale < requestedScale
-    ? `${file} (too large for ${requestedScale}×, saved at ${scale.toFixed(2)}×)`
+  return scale < 1
+    ? `${file} (too large, saved at ${Math.round(scale * 100)}% size)`
     : file;
 }
 
@@ -183,12 +181,8 @@ async function exportAllCategories() {
   );
 }
 
-/** Connects the export controls in the toolbar: the size choice and both save buttons. */
+/** Connects the two save buttons in the toolbar. */
 export function setUpPngExport() {
-  elements.exportScaleSelect.onchange = () => {
-    library.exportScale = getChosenExportScale();
-    saveLibrary();
-  };
   elements.exportButton.onclick = exportActiveCategory;
   elements.exportAllButton.onclick = exportAllCategories;
 }
