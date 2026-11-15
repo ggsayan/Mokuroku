@@ -1,0 +1,9 @@
+# Your poster images, library.json and trash
+posters/
+
+# Saved PNG exports
+exports/
+
+# Windows / Google Drive clutter
+desktop.ini
+Thumbs.db

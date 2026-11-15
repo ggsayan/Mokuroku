@@ -1,0 +1,26 @@
+export const DEFAULT_CATEGORY_NAMES = [
+  "Anime Series",
+  "Anime Movies",
+  "TV Series",
+];
+export const DEFAULT_COLUMNS = 6;
+export const MAX_STORED_POSTER_WIDTH = 800; // big enough to stay sharp in a 2× export
+
+export const EXPORT_LAYOUT = {
+  posterWidth: 360,
+  posterHeight: 540,
+  gap: 20,
+  padding: 48,
+  headerHeight: 110,
+  cornerRadius: 14,
+};
+export const EXPORT_COLORS = {
+  background: "#0f1115",
+  title: "#e8eaf0",
+  subtitle: "#8b90a0",
+};
+export const EXPORT_FONT = 'system-ui, "Segoe UI", sans-serif';
+
+// Largest canvas browsers can draw
+export const CANVAS_MAX_SIDE = 32767;
+export const CANVAS_MAX_AREA = 268e6;
