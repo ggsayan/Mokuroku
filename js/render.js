@@ -5,6 +5,7 @@ import {
   showRenameInput,
   switchToCategory,
 } from "./categories.js";
+import { LOW_RESOLUTION_WIDTH } from "./config.js";
 import { showCategoryMenu, showPosterMenu } from "./contextMenu.js";
 import { elements } from "./elements.js";
 import { getActiveCategory, getCategoriesInTabOrder } from "./library.js";
@@ -82,6 +83,19 @@ function renderGrid() {
 }
 
 /**
+ * Creates the "Low res" badge for a poster whose image is small.
+ * @param {HTMLImageElement} image - the loaded poster image
+ * @returns {HTMLElement}
+ */
+function createLowResBadge(image) {
+  const badge = document.createElement("span");
+  badge.className = "low-res-badge";
+  badge.textContent = "Low res";
+  badge.title = `Low resolution: ${image.naturalWidth} × ${image.naturalHeight} px`;
+  return badge;
+}
+
+/**
  * Sets the grid's number of columns and updates the slider to match.
  * @param {number} columns
  */
@@ -93,7 +107,8 @@ export function showColumnCount(columns) {
 
 /**
  * Creates one poster in the grid. Clicking opens the popup, right-clicking shows
- * its menu, and the × button removes it.
+ * its menu, and the × button removes it. Once its image has loaded, a "Low res"
+ * badge is added if it is narrower than LOW_RESOLUTION_WIDTH.
  * @param {Category} category - the category the poster belongs to
  * @param {Poster} poster
  * @returns {HTMLElement}
@@ -112,6 +127,9 @@ function createPosterCard(category, poster) {
   image.alt = "";
   image.loading = "lazy";
   image.draggable = false;
+  image.onload = () => {
+    if (image.naturalWidth < LOW_RESOLUTION_WIDTH) frame.append(createLowResBadge(image));
+  };
 
   const removeButton = document.createElement("button");
   removeButton.className = "remove";

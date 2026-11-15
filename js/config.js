@@ -5,6 +5,7 @@ export const DEFAULT_CATEGORY_NAMES = [
 ];
 export const DEFAULT_COLUMNS = 6;
 export const MAX_STORED_POSTER_WIDTH = 800; // big enough to stay sharp in a 2× export
+export const LOW_RESOLUTION_WIDTH = 400; // posters narrower than this get a "Low res" badge
 
 export const EXPORT_LAYOUT = {
   posterWidth: 360,
@@ -15,9 +16,9 @@ export const EXPORT_LAYOUT = {
   cornerRadius: 14,
 };
 export const EXPORT_COLORS = {
-  background: "#0f1115",
-  title: "#e8eaf0",
-  subtitle: "#8b90a0",
+  background: "#000000",
+  title: "#ededed",
+  subtitle: "#8c8c8c",
 };
 export const EXPORT_FONT = 'system-ui, "Segoe UI", sans-serif';
 

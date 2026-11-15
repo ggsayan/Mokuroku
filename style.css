@@ -1,9 +1,9 @@
 :root {
-  --bg: #0f1115;
-  --panel: #171a21;
-  --line: #262a34;
-  --text: #e8eaf0;
-  --muted: #8b90a0;
+  --bg: #000000;
+  --panel: #0b0b0b;
+  --line: #222222;
+  --text: #ededed;
+  --muted: #8c8c8c;
   --accent: #6c8cff;
   --danger: #ff6b6b;
   --radius: 10px;
@@ -102,6 +102,14 @@ body {
 }
 .frame:hover .remove { opacity: 1; }
 
+.low-res-badge {
+  position: absolute; left: 6px; bottom: 6px;
+  padding: 2px 7px; border-radius: 999px;
+  background: rgb(0 0 0 / .75); color: #ffc857;
+  border: 1px solid rgb(255 200 87 / .5);
+  font-size: 11px; font-weight: 600; pointer-events: auto;
+}
+
 .empty { margin-top: 15vh; text-align: center; color: var(--muted); }
 kbd {
   padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px;
@@ -112,7 +120,7 @@ kbd {
 .notice {
   position: fixed; inset: 0;
   display: grid; place-items: center;
-  background: rgb(15 17 21 / .92);
+  background: rgb(0 0 0 / .92);
 }
 .notice[hidden] { display: none; }
 .notice-card {

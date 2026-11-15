@@ -1,5 +1,6 @@
 // The popup that shows a poster larger
 import { posterImageUrl } from "./api.js";
+import { LOW_RESOLUTION_WIDTH } from "./config.js";
 import { elements } from "./elements.js";
 import { getActiveCategory } from "./library.js";
 
@@ -7,7 +8,8 @@ let shownPosition = -1; // position of the shown poster in the active category; 
 
 /**
  * Opens the popup on a poster of the open category, or moves it to that poster
- * if it is already open. Positions past either end wrap around.
+ * if it is already open. Positions past either end wrap around. The caption notes
+ * when the poster is narrower than LOW_RESOLUTION_WIDTH.
  * @param {number} position - the poster's position in the grid, starting at 0
  */
 export function openViewer(position) {
@@ -16,11 +18,18 @@ export function openViewer(position) {
   if (!posterCount) return closeViewer();
 
   shownPosition = (position + posterCount) % posterCount;
+  const counterText = `${shownPosition + 1} / ${posterCount}`;
+  elements.viewerCounter.textContent = counterText;
+  elements.viewerImage.onload = () => {
+    const { naturalWidth, naturalHeight } = elements.viewerImage;
+    if (naturalWidth < LOW_RESOLUTION_WIDTH) {
+      elements.viewerCounter.textContent = `${counterText} · low resolution (${naturalWidth} × ${naturalHeight} px)`;
+    }
+  };
   elements.viewerImage.src = posterImageUrl(
     category,
     category.posters[shownPosition],
   );
-  elements.viewerCounter.textContent = `${shownPosition + 1} / ${posterCount}`;
   elements.viewerPreviousButton.hidden = posterCount < 2;
   elements.viewerNextButton.hidden = posterCount < 2;
   elements.viewer.hidden = false;
