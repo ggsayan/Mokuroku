@@ -35,6 +35,7 @@ export async function addPosters(imageBlobs) {
 
   const category = getActiveCategory();
   let addedCount = 0;
+  let lastErrorMessage = "";
   for (const image of images) {
     try {
       const file = `${createId()}.jpg`;
@@ -48,16 +49,17 @@ export async function addPosters(imageBlobs) {
       addedCount++;
     } catch (error) {
       console.error(error);
+      lastErrorMessage = error.message;
     }
   }
   await saveLibrary();
   render();
 
   const failedCount = images.length - addedCount;
+  if (!failedCount) return showToast(`Added ${plural(addedCount, "poster")}`);
   showToast(
-    failedCount
-      ? `Added ${addedCount}, ${failedCount} failed`
-      : `Added ${plural(addedCount, "poster")}`,
+    `Added ${addedCount}, ${failedCount} failed: ${lastErrorMessage}`,
+    6000,
   );
 }
 

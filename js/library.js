@@ -39,11 +39,19 @@ export const getActiveCategory = () =>
   library.categories[0];
 
 /**
+ * The categories in the order their tabs are shown: most posters first.
+ * Categories with the same number of posters keep their saved order.
+ * @returns {Category[]}
+ */
+export const getCategoriesInTabOrder = () =>
+  [...library.categories].sort((a, b) => b.posters.length - a.posters.length);
+
+/**
  * Finds the category stored in a folder, ignoring upper/lower case.
  * @param {string} folder
  * @returns {Category | undefined}
  */
-const findCategoryByFolder = (folder) =>
+export const findCategoryByFolder = (folder) =>
   library.categories.find(
     (c) => c.folder.toLowerCase() === folder.toLowerCase(),
   );
@@ -51,16 +59,23 @@ const findCategoryByFolder = (folder) =>
 /**
  * Makes a folder name that is valid on Windows and not used by another category.
  * @param {string} categoryName
+ * @param {Category} [exceptCategory] - a category whose own folder doesn't count as taken
+ *   (used when renaming it)
  * @returns {string} e.g. "Movies", or "Movies (2)" if "Movies" is taken
  */
-function makeUniqueFolderName(categoryName) {
+export function makeUniqueFolderName(categoryName, exceptCategory) {
   const baseName =
     categoryName
       .replace(/[<>:"/\\|?*\x00-\x1f]/g, "")
       .replace(/^[. ]+|[. ]+$/g, "")
       .trim() || "Category";
+  const isTaken = (folder) =>
+    library.categories.some(
+      (c) =>
+        c !== exceptCategory && c.folder.toLowerCase() === folder.toLowerCase(),
+    );
   let folder = baseName;
-  for (let number = 2; findCategoryByFolder(folder); number++) {
+  for (let number = 2; isTaken(folder); number++) {
     folder = `${baseName} (${number})`;
   }
   return folder;

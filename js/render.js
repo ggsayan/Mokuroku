@@ -1,9 +1,13 @@
 // Draws the category tabs and the poster grid from the library
 import { posterImageUrl } from "./api.js";
-import { showNewCategoryInput, switchToCategory } from "./categories.js";
+import {
+  showNewCategoryInput,
+  showRenameInput,
+  switchToCategory,
+} from "./categories.js";
 import { showCategoryMenu, showPosterMenu } from "./contextMenu.js";
 import { elements } from "./elements.js";
-import { getActiveCategory, library } from "./library.js";
+import { getActiveCategory, getCategoriesInTabOrder } from "./library.js";
 import { makeTabDropTarget } from "./posterDrag.js";
 import { removePoster } from "./posters.js";
 import { openViewer } from "./viewer.js";
@@ -14,11 +18,11 @@ export function render() {
   renderGrid();
 }
 
-/** Redraws the category tabs, followed by the "+" button. */
+/** Redraws the category tabs, most posters first, followed by the "+" button. */
 export function renderTabs() {
   const activeCategory = getActiveCategory();
   elements.tabs.replaceChildren(
-    ...library.categories.map((category) =>
+    ...getCategoriesInTabOrder().map((category) =>
       createTab(category, category === activeCategory),
     ),
     createAddCategoryButton(),
@@ -26,8 +30,9 @@ export function renderTabs() {
 }
 
 /**
- * Creates one category tab with its poster count. Clicking opens it, right-clicking
- * shows its menu, and other categories' tabs accept dragged posters.
+ * Creates one category tab with its poster count. Clicking opens it, double-clicking
+ * renames it, and right-clicking shows its menu. Other categories' tabs accept
+ * dragged posters.
  * @param {Category} category
  * @param {boolean} isActive - whether this is the open tab
  * @returns {HTMLButtonElement}
@@ -36,6 +41,7 @@ function createTab(category, isActive) {
   const tab = document.createElement("button");
   tab.className = "tab" + (isActive ? " active" : "");
   tab.textContent = category.name;
+  tab.dataset.categoryId = category.id;
 
   const posterCount = document.createElement("span");
   posterCount.className = "count";
@@ -43,6 +49,7 @@ function createTab(category, isActive) {
   tab.append(posterCount);
 
   tab.onclick = () => switchToCategory(category);
+  tab.ondblclick = () => showRenameInput(category);
   tab.oncontextmenu = (event) => {
     event.preventDefault();
     showCategoryMenu(event.clientX, event.clientY, category);

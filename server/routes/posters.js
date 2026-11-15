@@ -1,7 +1,12 @@
 // API routes for poster images: save, move to the trash, restore, move to another category
 const fs = require("fs/promises");
 const path = require("path");
-const { moveTo, pathExists, timestamp } = require("../files");
+const {
+  moveTo,
+  pathExists,
+  removeFolderIfEmpty,
+  timestamp,
+} = require("../files");
 const { httpError, readRequestBody, sendOk } = require("../httpHelpers");
 const {
   posterFilePath,
@@ -37,6 +42,7 @@ async function restorePoster({ response, query }) {
     throw httpError(409, "A poster with that name already exists");
   }
   await moveTo(from, to);
+  await removeFolderIfEmpty(path.dirname(from));
   sendOk(response);
 }
 

@@ -1,7 +1,7 @@
 // The right-click menus for posters and category tabs
-import { removeCategory } from "./categories.js";
+import { removeCategory, showRenameInput } from "./categories.js";
 import { elements } from "./elements.js";
-import { getActiveCategory, library } from "./library.js";
+import { getActiveCategory, getCategoriesInTabOrder } from "./library.js";
 import { movePoster, removePoster } from "./posters.js";
 
 /**
@@ -15,7 +15,7 @@ export function showPosterMenu(x, y, file) {
   heading.className = "menu-heading";
   heading.textContent = "Move poster to";
 
-  const otherCategories = library.categories.filter(
+  const otherCategories = getCategoriesInTabOrder().filter(
     (c) => c !== getActiveCategory(),
   );
   showMenu(x, y, [
@@ -29,13 +29,14 @@ export function showPosterMenu(x, y, file) {
 }
 
 /**
- * Shows a category tab's right-click menu, which offers to remove the category.
+ * Shows a category tab's right-click menu: rename or remove the category.
  * @param {number} x - where to show the menu, in window pixels
  * @param {number} y
  * @param {Category} category
  */
 export function showCategoryMenu(x, y, category) {
   showMenu(x, y, [
+    createMenuItem("Rename", () => showRenameInput(category)),
     createMenuItem(
       `Remove “${category.name}”`,
       () => removeCategory(category),

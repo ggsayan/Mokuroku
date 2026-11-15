@@ -42,8 +42,26 @@ async function restoreCategoryFolder({ response, query }) {
   sendOk(response);
 }
 
+/**
+ * POST /api/folder/rename?folder=&to= — renames a category folder.
+ * Changing only upper/lower case is allowed. If the folder doesn't exist,
+ * it is created under the new name.
+ */
+async function renameCategoryFolder({ response, query }) {
+  const from = categoryFolderPath(query.folder);
+  const to = categoryFolderPath(query.to);
+  const isCaseChangeOnly = query.folder.toLowerCase() === query.to.toLowerCase();
+  if (!isCaseChangeOnly && (await pathExists(to))) {
+    throw httpError(409, "A folder with that name already exists");
+  }
+  if (await pathExists(from)) await fs.rename(from, to);
+  else await fs.mkdir(to, { recursive: true });
+  sendOk(response);
+}
+
 module.exports = {
   createCategoryFolder,
   trashCategoryFolder,
   restoreCategoryFolder,
+  renameCategoryFolder,
 };

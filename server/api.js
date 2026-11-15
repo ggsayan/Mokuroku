@@ -5,6 +5,7 @@ const { saveExport } = require("./routes/exports");
 const { downloadImage } = require("./routes/imageDownload");
 const library = require("./routes/library");
 const posters = require("./routes/posters");
+const trash = require("./routes/trash");
 
 /* Each route receives { request, response, query }, where query holds the
  * ?key=value parameters of the address.
@@ -15,12 +16,17 @@ const API_ROUTES = {
   "POST /api/folder": categoryFolders.createCategoryFolder,
   "DELETE /api/folder": categoryFolders.trashCategoryFolder,
   "POST /api/folder/restore": categoryFolders.restoreCategoryFolder,
+  "POST /api/folder/rename": categoryFolders.renameCategoryFolder,
   "PUT /api/poster": posters.savePoster,
   "DELETE /api/poster": posters.trashPoster,
   "POST /api/poster/restore": posters.restorePoster,
   "POST /api/poster/move": posters.movePoster,
   "POST /api/fetch": downloadImage,
   "PUT /api/export": saveExport,
+  "GET /api/trash": trash.listTrash,
+  "DELETE /api/trash": trash.emptyTrash,
+  "DELETE /api/trash/poster": trash.deleteTrashedPoster,
+  "DELETE /api/trash/category": trash.deleteTrashedCategory,
 };
 
 /**

@@ -26,4 +26,9 @@ export const elements = {
   viewerPreviousButton: byId("viewerPrev"),
   viewerNextButton: byId("viewerNext"),
   viewerCloseButton: byId("viewerClose"),
+  trashButton: byId("trashButton"),
+  trashDialog: byId("trashDialog"),
+  trashContent: byId("trashContent"),
+  trashCloseButton: byId("trashClose"),
+  emptyTrashButton: byId("emptyTrash"),
 };

@@ -43,6 +43,8 @@ function sendOk(response, extraFields = {}) {
 
 /**
  * Reads the whole uploaded body of a request.
+ * A body over the limit is still read to the end (and thrown away) before failing:
+ * cutting the connection early would stop the browser from seeing the error message.
  * @param {import("http").IncomingMessage} request
  * @param {number} [maxSize] - in bytes
  * @returns {Promise<Buffer>}
@@ -54,14 +56,16 @@ function readRequestBody(request, maxSize = MAX_UPLOAD_SIZE) {
     let size = 0;
     request.on("data", (chunk) => {
       size += chunk.length;
+      if (size <= maxSize) chunks.push(chunk);
+    });
+    request.on("end", () => {
       if (size > maxSize) {
-        reject(httpError(413, "File too large"));
-        request.destroy();
+        const limitInMb = Math.round(maxSize / (1024 * 1024));
+        reject(httpError(413, `File too large (the limit is ${limitInMb} MB)`));
       } else {
-        chunks.push(chunk);
+        resolve(Buffer.concat(chunks));
       }
     });
-    request.on("end", () => resolve(Buffer.concat(chunks)));
     request.on("error", reject);
   });
 }

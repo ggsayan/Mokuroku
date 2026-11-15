@@ -34,6 +34,49 @@ async function moveTo(from, to) {
 const timestamp = () => Date.now().toString(36);
 
 /**
+ * Lists the names of the folders inside a folder.
+ * @param {string} parentFolder
+ * @returns {Promise<string[]>} empty if the folder doesn't exist
+ */
+async function listSubfolders(parentFolder) {
+  try {
+    const entries = await fs.readdir(parentFolder, { withFileTypes: true });
+    return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+/**
+ * Lists the poster images (.jpg, .jpeg, .png, .webp) in a folder, sorted by name.
+ * @param {string} folder
+ * @returns {Promise<string[]>} file names; empty if the folder doesn't exist
+ */
+async function listImageFiles(folder) {
+  try {
+    const entries = await fs.readdir(folder, { withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isFile() && POSTER_FILE_PATTERN.test(entry.name))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+/**
+ * Deletes a folder if nothing is left in it; does nothing otherwise.
+ * @param {string} folder
+ */
+async function removeFolderIfEmpty(folder) {
+  try {
+    await fs.rmdir(folder);
+  } catch {}
+}
+
+/**
  * Lists the images in every category folder under posters/.
  * Hidden folders such as .trash are skipped. Creates posters/ if it is missing.
  * @returns {Promise<Record<string, string[]>>} { "<folder>": ["file1.jpg", ...] }
@@ -41,18 +84,19 @@ const timestamp = () => Date.now().toString(36);
 async function listPosterFilesOnDisk() {
   await fs.mkdir(POSTERS_FOLDER, { recursive: true });
   const filesByFolder = {};
-  const entries = await fs.readdir(POSTERS_FOLDER, { withFileTypes: true });
-  for (const folder of entries) {
-    if (!folder.isDirectory() || folder.name.startsWith(".")) continue;
-    const files = await fs.readdir(path.join(POSTERS_FOLDER, folder.name), {
-      withFileTypes: true,
-    });
-    filesByFolder[folder.name] = files
-      .filter((file) => file.isFile() && POSTER_FILE_PATTERN.test(file.name))
-      .map((file) => file.name)
-      .sort();
+  for (const folder of await listSubfolders(POSTERS_FOLDER)) {
+    if (folder.startsWith(".")) continue;
+    filesByFolder[folder] = await listImageFiles(path.join(POSTERS_FOLDER, folder));
   }
   return filesByFolder;
 }
 
-module.exports = { pathExists, moveTo, timestamp, listPosterFilesOnDisk };
+module.exports = {
+  pathExists,
+  moveTo,
+  timestamp,
+  listSubfolders,
+  listImageFiles,
+  removeFolderIfEmpty,
+  listPosterFilesOnDisk,
+};

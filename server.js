@@ -4,7 +4,7 @@
 
 const http = require("http");
 const { handleApiRequest } = require("./server/api");
-const { EXPORTS_FOLDER, HOST, PORT, POSTERS_FOLDER } = require("./server/config");
+const { HOST, PORT } = require("./server/config");
 const { httpError, sendResponse } = require("./server/httpHelpers");
 const { serveAppFile } = require("./server/staticFiles");
 
@@ -32,7 +32,5 @@ async function handleRequest(request, response) {
 
 http.createServer(handleRequest).listen(PORT, HOST, () => {
   console.log(`Mokuroku running at http://${HOST}:${PORT}`);
-  console.log(`Posters are saved in ${POSTERS_FOLDER}/`);
-  console.log(`PNG exports are saved in ${EXPORTS_FOLDER}/`);
   console.log("Press Ctrl+C to stop.");
 });

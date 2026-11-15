@@ -1,9 +1,26 @@
-// Switching, adding and removing categories
+// Switching, adding, renaming and removing categories
 import { callServer, requestJson } from "./api.js";
-import { createCategory, library, saveLibrary } from "./library.js";
+import { elements } from "./elements.js";
+import {
+  createCategory,
+  library,
+  makeUniqueFolderName,
+  saveLibrary,
+} from "./library.js";
 import { render, renderTabs } from "./render.js";
 import { showToast } from "./toast.js";
 import { plural } from "./utils.js";
+
+/**
+ * Whether another category already uses this name (ignoring upper/lower case).
+ * @param {string} name
+ * @param {Category} [exceptCategory] - the category being renamed, which doesn't count
+ * @returns {boolean}
+ */
+const isNameTaken = (name, exceptCategory) =>
+  library.categories.some(
+    (c) => c !== exceptCategory && c.name.toLowerCase() === name.toLowerCase(),
+  );
 
 /**
  * Opens a category's tab.
@@ -17,22 +34,25 @@ export function switchToCategory(category) {
 }
 
 /**
- * Replaces the "+" button with a name box. Enter or clicking away adds the
- * category; Escape or an empty name cancels.
- * @param {HTMLButtonElement} addButton - the "+" button to replace
+ * Replaces an element in the tab bar with a name box. Enter or clicking away
+ * submits; Escape, an empty name or an unchanged name cancels.
+ * @param {HTMLElement} elementToReplace
+ * @param {string} initialName - shown in the box to start with
+ * @param {(name: string) => void} onSubmit - called with the new, trimmed name
  */
-export function showNewCategoryInput(addButton) {
+function showNameInput(elementToReplace, initialName, onSubmit) {
   const input = document.createElement("input");
   input.className = "tab-input";
   input.placeholder = "Category name";
   input.maxLength = 60;
+  input.value = initialName;
 
   let isFinished = false;
-  const finish = (shouldAdd) => {
+  const finish = (shouldSubmit) => {
     if (isFinished) return;
     isFinished = true;
     const name = input.value.trim();
-    if (shouldAdd && name) addCategory(name);
+    if (shouldSubmit && name && name !== initialName) onSubmit(name);
     else renderTabs();
   };
   input.onkeydown = (event) => {
@@ -41,8 +61,60 @@ export function showNewCategoryInput(addButton) {
   };
   input.onblur = () => finish(true);
 
-  addButton.replaceWith(input);
+  elementToReplace.replaceWith(input);
   input.focus();
+  input.select();
+}
+
+/**
+ * Replaces the "+" button with a name box for a new category.
+ * @param {HTMLButtonElement} addButton
+ */
+export function showNewCategoryInput(addButton) {
+  showNameInput(addButton, "", addCategory);
+}
+
+/**
+ * Replaces a category's tab with a name box for renaming it.
+ * @param {Category} category
+ */
+export function showRenameInput(category) {
+  // Looked up by id, since the tabs may have been redrawn (e.g. by the click before a double-click)
+  const tab = elements.tabs.querySelector(
+    `[data-category-id="${category.id}"]`,
+  );
+  if (tab) showNameInput(tab, category.name, (name) => renameCategory(category, name));
+}
+
+/**
+ * Renames a category, and its folder on disk to match. Refuses a name that
+ * another category already uses (ignoring upper/lower case).
+ * @param {Category} category
+ * @param {string} newName
+ */
+async function renameCategory(category, newName) {
+  if (isNameTaken(newName, category)) {
+    showToast(`There's already a category called “${newName}”`, 4000);
+    return renderTabs();
+  }
+
+  const newFolder = makeUniqueFolderName(newName, category);
+  if (newFolder !== category.folder) {
+    try {
+      await callServer("POST", "/api/folder/rename", {
+        folder: category.folder,
+        to: newFolder,
+      });
+    } catch (error) {
+      showToast(`Could not rename: ${error.message}`, 5000);
+      return renderTabs();
+    }
+    category.folder = newFolder;
+  }
+  category.name = newName;
+  await saveLibrary();
+  render();
+  showToast(`Renamed to “${newName}”`);
 }
 
 /**
@@ -51,10 +123,7 @@ export function showNewCategoryInput(addButton) {
  * @param {string} name
  */
 async function addCategory(name) {
-  const nameTaken = library.categories.some(
-    (c) => c.name.toLowerCase() === name.toLowerCase(),
-  );
-  if (nameTaken) {
+  if (isNameTaken(name)) {
     showToast(`There's already a category called “${name}”`, 4000);
     return renderTabs();
   }

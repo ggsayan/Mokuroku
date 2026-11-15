@@ -8,6 +8,7 @@ import { getActiveCategory, library, loadLibrary, saveLibrary } from "./library.
 import { setUpPngExport } from "./pngExport.js";
 import { setUpPosterDragging } from "./posterDrag.js";
 import { render, showColumnCount } from "./render.js";
+import { setUpTrash } from "./trash.js";
 import { setUpViewer } from "./viewer.js";
 
 /**
@@ -29,6 +30,7 @@ setUpPngExport();
 setUpViewer();
 setUpContextMenu();
 setUpPosterDragging();
+setUpTrash();
 
 try {
   await loadLibrary();
