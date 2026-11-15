@@ -6,8 +6,8 @@ export const DEFAULT_CATEGORY_NAMES = [
   "TV Series",
 ];
 export const DEFAULT_COLUMNS = 6;
-export const MAX_STORED_POSTER_WIDTH = 800; // big enough to stay sharp in the popup
-export const LOW_RESOLUTION_WIDTH = 400; // posters narrower than this get a "Low res" badge
+export const MAX_STORED_POSTER_WIDTH = 1200; // big enough to stay sharp in the popup
+export const LOW_RESOLUTION_WIDTH = 600; // posters narrower than this get a "Low res" badge
 
 export const EXPORT_LAYOUT = {
   posterWidth: 360,
