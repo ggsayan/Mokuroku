@@ -1,6 +1,7 @@
 // Getting new images in: the file picker, dropped files, images dragged from websites, and pasting
 import { callServer } from "./api.js";
 import { elements } from "./elements.js";
+import { getDroppedImageAddresses } from "./imageUrls.js";
 import { isDraggingPoster } from "./posterDrag.js";
 import { addPosters } from "./posters.js";
 import { showToast } from "./toast.js";
@@ -20,32 +21,6 @@ const isExternalDrag = (event) =>
   );
 
 /**
- * Finds the image address in something dragged out of another browser window.
- * The <img> in text/html is preferred, because text/uri-list is often the
- * surrounding link instead (e.g. a search results page).
- * @param {DataTransfer} dataTransfer
- * @returns {string} the image address, or "" if there is none
- */
-function getDroppedImageUrl(dataTransfer) {
-  const html = dataTransfer.getData("text/html");
-  if (html) {
-    const image = new DOMParser()
-      .parseFromString(html, "text/html")
-      .querySelector("img[src]");
-    if (image) return image.getAttribute("src");
-  }
-
-  const firstUri = dataTransfer
-    .getData("text/uri-list")
-    .split(/\r?\n/)
-    .find((line) => line && !line.startsWith("#"));
-  if (firstUri) return firstUri;
-
-  const plainText = dataTransfer.getData("text/plain").trim();
-  return /^(https?|data):/.test(plainText) ? plainText : "";
-}
-
-/**
  * Downloads an image. Other websites block the browser from downloading their
  * images, so web addresses are fetched by the server instead.
  * @param {string} url - a web address, or a data:/blob: address
@@ -59,17 +34,25 @@ async function downloadImage(url) {
 }
 
 /**
- * Downloads an image and adds it as a poster, showing progress and errors.
- * @param {string} url
+ * Downloads the first of the addresses that works and adds it as a poster,
+ * showing progress and errors.
+ * @param {string[]} addresses - best quality first
  */
-async function addPosterFromUrl(url) {
+async function addPosterFromAddresses(addresses) {
   showToast("Downloading image…", 20000);
-  try {
-    await addPosters([await downloadImage(url)]);
-  } catch (error) {
-    console.error(error);
-    showToast(`Couldn't add that image: ${error.message}`, 6000);
+  let lastError;
+  for (const address of addresses) {
+    let image;
+    try {
+      image = await downloadImage(address);
+    } catch (error) {
+      console.warn(`Couldn't download ${address}:`, error.message);
+      lastError = error;
+      continue;
+    }
+    return addPosters([image]);
   }
+  showToast(`Couldn't add that image: ${lastError.message}`, 6000);
 }
 
 /**
@@ -106,8 +89,8 @@ function handleDrop(event) {
   );
   if (imageFiles.length) return addPosters(imageFiles);
 
-  const url = getDroppedImageUrl(event.dataTransfer);
-  if (url) addPosterFromUrl(url);
+  const addresses = getDroppedImageAddresses(event.dataTransfer);
+  if (addresses.length) addPosterFromAddresses(addresses);
   else if (event.dataTransfer.files.length) showToast("No images found");
 }
 
