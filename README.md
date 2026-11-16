@@ -2,6 +2,8 @@
 
 Mokuroku is a local-only poster shelf: collect poster images into categories, arrange them in a grid, and save each grid as a PNG.
 
+![Mokuroku showing a category of posters in a grid](images/display.png)
+
 ## Run
 
 Needs [Node.js](https://nodejs.org) (no other dependencies).
