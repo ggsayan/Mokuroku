@@ -23,3 +23,5 @@ Posters are stored in the `posters/` folder, one subfolder per category. Saved P
 - **Categories:** "+" adds one; double-click a tab to rename it.
 - **Export:** "Save PNG" saves the open category to `exports/`, at 1x or 2x; "Save all" saves every category.
 - **Trash:** removed posters and categories can be restored from the Trash panel.
+
+**Translation:** _Mokuroku_ (目録) is Japanese for "catalogue" or "inventory".
